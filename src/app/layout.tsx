@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import Providers from "./providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -62,9 +63,11 @@ export default function RootLayout({
             </div>
           </div>
         </nav>
-        <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-          {children}
-        </main>
+        <Providers>
+          <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            {children}
+          </main>
+        </Providers>
         <footer className="border-t border-border py-6 text-center text-sm text-muted">
           Hanyu Journal — Built for learning Chinese, one word at a time.
         </footer>
