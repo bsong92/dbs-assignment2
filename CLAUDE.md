@@ -11,6 +11,8 @@ Helps retain Chinese words and phrases learned through Duolingo by providing a p
 - `/vocab` — Browse all vocabulary with search and filter
 - `/vocab/[id]` — Individual word/phrase detail page (dynamic route)
 - `/review` — Review mode with flashcard flip and multiple choice quiz
+- `/practice` — Sentence builder with free practice and reconstruction game
+- `/progress` — Progress tracking with mastery %, category breakdown, visual bars
 
 ## Data Model
 Each vocabulary entry has:
