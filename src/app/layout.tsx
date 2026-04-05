@@ -24,6 +24,8 @@ const navLinks = [
   { href: "/add", label: "Add Word" },
   { href: "/vocab", label: "Vocabulary" },
   { href: "/review", label: "Review" },
+  { href: "/practice", label: "Practice" },
+  { href: "/progress", label: "Progress" },
 ];
 
 export default function RootLayout({
