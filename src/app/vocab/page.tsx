@@ -11,13 +11,19 @@ export default function VocabPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
 
+  // Strip tone marks so "bukeqi" matches "bú kè qi"
+  const stripTones = (s: string) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+
   const filtered = entries.filter((entry) => {
     const matchesCategory = category === "all" || entry.category === category;
     const q = search.toLowerCase();
+    const qStripped = stripTones(q);
     const matchesSearch =
       !q ||
       entry.chinese.includes(q) ||
       entry.pinyin.toLowerCase().includes(q) ||
+      stripTones(entry.pinyin.toLowerCase()).includes(qStripped) ||
       entry.english.toLowerCase().includes(q);
     return matchesCategory && matchesSearch;
   });
