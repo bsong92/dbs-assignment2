@@ -30,17 +30,17 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navigation />
         <Providers>
+          <Navigation />
           <main className="flex-1 max-w-6xl mx-auto w-full px-5 sm:px-8 py-10">
             {children}
           </main>
+          <footer className="border-t border-border py-8 text-center">
+            <p className="text-sm text-muted">
+              Wordkeep — Built for learning Chinese, one word at a time.
+            </p>
+          </footer>
         </Providers>
-        <footer className="border-t border-border py-8 text-center">
-          <p className="text-sm text-muted">
-            Wordkeep — Built for learning Chinese, one word at a time.
-          </p>
-        </footer>
       </body>
     </html>
   );
