@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useVocab, VocabEntry } from "@/context/VocabContext";
 
-type Mode = "free" | "reconstruct";
+type Mode = "match" | "reconstruct";
 
 function shuffle<T>(array: T[]): T[] {
   const arr = [...array];
@@ -15,96 +15,135 @@ function shuffle<T>(array: T[]): T[] {
   return arr;
 }
 
-function FreePractice({ entries }: { entries: VocabEntry[] }) {
-  const [sentence, setSentence] = useState<string[]>([]);
-  const [shuffledWords, setShuffledWords] = useState(() =>
-    shuffle(entries.map((e) => e.chinese))
-  );
+function WordMatch({ entries }: { entries: VocabEntry[] }) {
+  const rounds = useMemo(() => {
+    if (entries.length < 4) return [];
+    const shuffled = shuffle(entries).slice(0, 10);
+    return shuffled.map((entry) => {
+      const distractors = shuffle(entries.filter((e) => e.id !== entry.id)).slice(0, 3);
+      const options = shuffle([entry, ...distractors]);
+      return { target: entry, options };
+    });
+  }, [entries]);
 
-  if (entries.length === 0) {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  if (entries.length < 4) {
     return (
       <div className="text-center py-16 text-muted">
-        <p className="text-xl font-medium">No words to practice with.</p>
+        <p className="text-xl font-medium">Need at least 4 words for matching.</p>
         <Link href="/add" className="text-primary hover:underline font-semibold mt-2 inline-block">
-          Add some words first →
+          Add more words →
         </Link>
       </div>
     );
   }
 
+  if (finished) {
+    const percent = Math.round((score / rounds.length) * 100);
+    return (
+      <div className="text-center py-16 max-w-sm mx-auto">
+        <div className="w-24 h-24 rounded-full bg-primary-light flex items-center justify-center mx-auto mb-6">
+          <span className="text-3xl font-extrabold text-primary">{percent}%</span>
+        </div>
+        <p className="text-2xl font-extrabold mb-2">
+          {score === rounds.length ? "Perfect!" : score >= rounds.length * 0.7 ? "Great job!" : "Keep practicing!"}
+        </p>
+        <p className="text-muted mb-8">
+          You matched {score} out of {rounds.length} correctly.
+        </p>
+        <button
+          onClick={() => { setCurrent(0); setSelected(null); setScore(0); setFinished(false); }}
+          className="py-3 px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark text-white transition-all cursor-pointer hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
+        >
+          Play Again
+        </button>
+      </div>
+    );
+  }
+
+  const round = rounds[current];
+
+  const handleSelect = (id: string) => {
+    if (selected) return;
+    setSelected(id);
+    if (id === round.target.id) setScore((s) => s + 1);
+  };
+
+  const handleNext = () => {
+    if (current + 1 >= rounds.length) setFinished(true);
+    else { setCurrent((c) => c + 1); setSelected(null); }
+  };
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <p className="text-sm text-muted font-medium">
-        Click words below to build a sentence. Click a word in your sentence to remove it.
+    <div className="max-w-lg mx-auto space-y-6">
+      {/* Progress */}
+      <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-primary rounded-full transition-all duration-300"
+          style={{ width: `${((current + 1) / rounds.length) * 100}%` }}
+        />
+      </div>
+      <p className="text-sm text-muted text-center font-medium">
+        Round {current + 1} of {rounds.length}
       </p>
 
-      {/* Sentence area */}
-      <div className="min-h-[120px] bg-surface rounded-2xl border-2 border-dashed border-border p-5">
-        {sentence.length === 0 ? (
-          <p className="text-muted text-center py-8 font-medium">
-            Click words below to start building...
-          </p>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {sentence.map((word, i) => (
-              <button
-                key={`${word}-${i}`}
-                onClick={() => setSentence((prev) => prev.filter((_, idx) => idx !== i))}
-                className="px-4 py-2.5 bg-primary-light text-primary-dark font-bold text-lg rounded-xl hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer active:scale-95"
-                title="Click to remove"
-              >
-                {word}
-              </button>
-            ))}
-          </div>
-        )}
+      {/* Prompt */}
+      <div className="bg-surface rounded-2xl border border-border p-8 text-center">
+        <p className="text-xs font-bold text-muted uppercase tracking-widest mb-2">
+          Find the Chinese word for
+        </p>
+        <p className="text-2xl font-extrabold">{round.target.english}</p>
+        <p className="text-sm text-muted mt-1">{round.target.pinyin}</p>
       </div>
 
-      {sentence.length > 0 && (
-        <div className="p-4 bg-surface rounded-2xl border border-border">
-          <p className="text-xs font-bold text-muted uppercase tracking-widest mb-2">Your sentence</p>
-          <p className="text-3xl font-extrabold tracking-tight">{sentence.join("")}</p>
-        </div>
-      )}
-
-      <div className="flex gap-2">
-        <button
-          onClick={() => setSentence([])}
-          disabled={sentence.length === 0}
-          className="px-5 py-2.5 rounded-xl font-bold bg-stone-100 text-foreground hover:bg-stone-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
-        >
-          Clear
-        </button>
-        <button
-          onClick={() => setShuffledWords(shuffle(entries.map((e) => e.chinese)))}
-          className="px-5 py-2.5 rounded-xl font-bold bg-stone-100 text-foreground hover:bg-stone-200 transition-all cursor-pointer active:scale-[0.98]"
-        >
-          Shuffle
-        </button>
-      </div>
-
-      {/* Word bank */}
-      <div>
-        <p className="text-xs font-bold text-muted uppercase tracking-widest mb-3">Word Bank</p>
-        <div className="flex flex-wrap gap-2">
-          {shuffledWords.map((word, i) => (
+      {/* Options — show Chinese characters */}
+      <div className="grid grid-cols-2 gap-3">
+        {round.options.map((option) => {
+          let style = "bg-surface border-border hover:border-primary/30 hover:shadow-sm";
+          if (selected) {
+            if (option.id === round.target.id) {
+              style = "bg-green-50 border-green-500 text-green-800 shadow-sm";
+            } else if (option.id === selected && option.id !== round.target.id) {
+              style = "bg-red-50 border-red-500 text-red-800 shadow-sm";
+            } else {
+              style = "bg-surface border-border opacity-40";
+            }
+          }
+          return (
             <button
-              key={`${word}-${i}`}
-              onClick={() => setSentence((prev) => [...prev, word])}
-              className="px-4 py-2.5 bg-surface border border-border rounded-xl text-lg font-semibold hover:border-primary/40 hover:bg-primary-light/50 transition-all cursor-pointer active:scale-95"
+              key={option.id}
+              onClick={() => handleSelect(option.id)}
+              disabled={selected !== null}
+              className={`p-5 rounded-xl border-2 text-center font-bold transition-all duration-200 cursor-pointer disabled:cursor-default ${style}`}
             >
-              {word}
+              <span className="text-3xl block mb-1">{option.chinese}</span>
+              {selected && (
+                <span className="text-xs text-muted block">{option.english}</span>
+              )}
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
+
+      {selected && (
+        <button
+          onClick={handleNext}
+          className="w-full py-3 rounded-xl font-bold bg-primary hover:bg-primary-dark text-white transition-all cursor-pointer hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
+        >
+          {current + 1 >= rounds.length ? "See Results" : "Next →"}
+        </button>
+      )}
     </div>
   );
 }
 
 function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
   const sentenceEntries = useMemo(
-    () => shuffle(entries.filter((e) => e.example)),
+    () => shuffle(entries.filter((e) => e.example)).slice(0, 10),
     [entries]
   );
 
@@ -113,6 +152,7 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
   const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
+  const [finished, setFinished] = useState(false);
 
   if (sentenceEntries.length === 0) {
     return (
@@ -123,7 +163,30 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
     );
   }
 
-  const current = sentenceEntries[index % sentenceEntries.length];
+  if (finished) {
+    const percent = total > 0 ? Math.round((score / total) * 100) : 0;
+    return (
+      <div className="text-center py-16 max-w-sm mx-auto">
+        <div className="w-24 h-24 rounded-full bg-primary-light flex items-center justify-center mx-auto mb-6">
+          <span className="text-3xl font-extrabold text-primary">{percent}%</span>
+        </div>
+        <p className="text-2xl font-extrabold mb-2">
+          {score === total ? "Perfect!" : score >= total * 0.7 ? "Great job!" : "Keep practicing!"}
+        </p>
+        <p className="text-muted mb-8">
+          You reconstructed {score} out of {total} sentences correctly.
+        </p>
+        <button
+          onClick={() => { setIndex(0); setSelected([]); setChecked(false); setScore(0); setTotal(0); setFinished(false); }}
+          className="py-3 px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark text-white transition-all cursor-pointer hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
+        >
+          Play Again
+        </button>
+      </div>
+    );
+  }
+
+  const current = sentenceEntries[index];
   const originalChars = current.example!.replace(/[。！？，、]/g, "").split("");
   const scrambled = useMemo(
     () => shuffle([...originalChars]),
@@ -152,16 +215,27 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
   };
 
   const handleNext = () => {
-    setIndex((i) => i + 1);
-    setSelected([]);
-    setChecked(false);
+    if (index + 1 >= sentenceEntries.length) {
+      setFinished(true);
+    } else {
+      setIndex((i) => i + 1);
+      setSelected([]);
+      setChecked(false);
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
+      {/* Progress */}
+      <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-primary rounded-full transition-all duration-300"
+          style={{ width: `${((index + 1) / sentenceEntries.length) * 100}%` }}
+        />
+      </div>
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted font-medium">
-          Sentence {(index % sentenceEntries.length) + 1} of {sentenceEntries.length}
+          Sentence {index + 1} of {sentenceEntries.length}
         </p>
         {total > 0 && (
           <p className="text-sm font-bold text-primary">
@@ -170,9 +244,10 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
         )}
       </div>
 
+      {/* Prompt */}
       <div className="bg-surface rounded-2xl border border-border p-6 text-center">
         <p className="text-xs font-bold text-muted uppercase tracking-widest mb-2">
-          Reconstruct this sentence
+          Arrange the characters to form
         </p>
         <p className="text-xl font-semibold">{current.english}</p>
         <p className="text-sm text-muted mt-1.5">
@@ -180,6 +255,7 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
         </p>
       </div>
 
+      {/* Build area */}
       <div className="min-h-[80px] bg-surface rounded-2xl border-2 border-dashed border-border p-4">
         {selected.length === 0 ? (
           <p className="text-muted text-center py-4 font-medium">
@@ -245,7 +321,7 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
             onClick={handleNext}
             className="flex-1 py-2.5 rounded-xl font-bold bg-primary hover:bg-primary-dark text-white transition-all cursor-pointer hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
           >
-            Next Sentence →
+            {index + 1 >= sentenceEntries.length ? "See Results" : "Next Sentence →"}
           </button>
         )}
       </div>
@@ -272,32 +348,42 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
 
 export default function PracticePage() {
   const { entries } = useVocab();
-  const [mode, setMode] = useState<Mode>("free");
+  const [mode, setMode] = useState<Mode>("match");
+  const [key, setKey] = useState(0);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-extrabold tracking-tight mb-2">Sentence Practice</h1>
-        <p className="text-muted text-lg">Build sentences with your vocabulary words.</p>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-2">Practice</h1>
+        <p className="text-muted text-lg">Test your knowledge with games.</p>
       </div>
 
       <div className="flex gap-2 justify-center">
-        {(["free", "reconstruct"] as const).map((m) => (
+        {([
+          { id: "match" as const, label: "Word Match", desc: "Match English → Chinese" },
+          { id: "reconstruct" as const, label: "Reconstruction", desc: "Arrange characters into sentences" },
+        ]).map((m) => (
           <button
-            key={m}
-            onClick={() => setMode(m)}
-            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer ${
-              mode === m
+            key={m.id}
+            onClick={() => { setMode(m.id); setKey((k) => k + 1); }}
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer ${
+              mode === m.id
                 ? "bg-primary text-white shadow-sm"
                 : "bg-surface border border-border text-muted hover:text-foreground hover:border-border-hover"
             }`}
           >
-            {m === "free" ? "Free Practice" : "Reconstruction"}
+            <span className="block">{m.label}</span>
+            <span className={`text-xs font-medium ${mode === m.id ? "text-white/70" : "text-muted"}`}>
+              {m.desc}
+            </span>
           </button>
         ))}
       </div>
 
-      {mode === "free" ? <FreePractice entries={entries} /> : <ReconstructGame entries={entries} />}
+      {mode === "match"
+        ? <WordMatch key={`wm-${key}`} entries={entries} />
+        : <ReconstructGame key={`rg-${key}`} entries={entries} />
+      }
     </div>
   );
 }
