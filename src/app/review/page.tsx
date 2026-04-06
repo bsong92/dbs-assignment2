@@ -212,6 +212,19 @@ function QuizMode({ entries }: { entries: VocabEntry[] }) {
 export default function ReviewPage() {
   const { entries } = useVocab();
   const [mode, setMode] = useState<Mode>("flashcard");
+  const [category, setCategory] = useState("all");
+  const [key, setKey] = useState(0); // force remount when filter changes
+
+  const categories = ["all", ...new Set(entries.map((e) => e.category))].filter(Boolean);
+
+  const filtered = category === "all"
+    ? entries
+    : entries.filter((e) => e.category === category);
+
+  const handleCategoryChange = (cat: string) => {
+    setCategory(cat);
+    setKey((k) => k + 1); // reset flashcard/quiz state
+  };
 
   return (
     <div className="space-y-8">
@@ -220,11 +233,12 @@ export default function ReviewPage() {
         <p className="text-muted text-lg">Practice and reinforce your vocabulary.</p>
       </div>
 
+      {/* Mode toggle */}
       <div className="flex gap-2 justify-center">
         {(["flashcard", "quiz"] as const).map((m) => (
           <button
             key={m}
-            onClick={() => setMode(m)}
+            onClick={() => { setMode(m); setKey((k) => k + 1); }}
             className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer capitalize ${
               mode === m
                 ? "bg-primary text-white shadow-sm"
@@ -236,7 +250,27 @@ export default function ReviewPage() {
         ))}
       </div>
 
-      {mode === "flashcard" ? <FlashcardMode entries={entries} /> : <QuizMode entries={entries} />}
+      {/* Category filter */}
+      <div className="flex gap-1.5 flex-wrap justify-center">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => handleCategoryChange(cat)}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer capitalize ${
+              category === cat
+                ? "bg-accent text-white shadow-sm"
+                : "bg-surface border border-border text-muted hover:text-foreground hover:border-border-hover"
+            }`}
+          >
+            {cat === "all" ? `All (${entries.length})` : `${cat} (${entries.filter((e) => e.category === cat).length})`}
+          </button>
+        ))}
+      </div>
+
+      {mode === "flashcard"
+        ? <FlashcardMode key={`fc-${key}`} entries={filtered} />
+        : <QuizMode key={`qz-${key}`} entries={filtered} />
+      }
     </div>
   );
 }
