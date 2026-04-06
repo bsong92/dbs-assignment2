@@ -195,9 +195,9 @@ function QuizMode({ entries }: { entries: VocabEntry[] }) {
           let style = "bg-surface border-border hover:border-primary/40";
           if (selected !== null) {
             if (option.correct) {
-              style = "bg-green-50 border-green-400 text-green-800";
+              style = "bg-green-500/10 border-green-500 text-green-400";
             } else if (i === selected && !option.correct) {
-              style = "bg-red-50 border-red-400 text-red-800";
+              style = "bg-red-500/10 border-red-500 text-red-400";
             } else {
               style = "bg-surface border-border opacity-50";
             }

@@ -37,7 +37,7 @@ export default function ProgressPage() {
       <div className="bg-surface rounded-2xl border border-border p-6 mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold">Overall Mastery</h2>
-          <span className="text-2xl font-bold text-primary-dark">
+          <span className="text-2xl font-bold text-primary">
             {masteryPercent}%
           </span>
         </div>
@@ -60,7 +60,7 @@ export default function ProgressPage() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/15 mb-2">
             <span className="text-xl">&#10003;</span>
           </div>
-          <p className="text-2xl font-bold text-primary-dark">{masteredWords}</p>
+          <p className="text-2xl font-bold text-primary">{masteredWords}</p>
           <p className="text-sm text-muted">Mastered</p>
         </div>
         <div className="bg-surface rounded-xl border border-border p-5 text-center">

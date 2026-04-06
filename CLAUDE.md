@@ -28,7 +28,7 @@ Each vocabulary entry has:
 Data is stored in React Context (client-side state only — resets on refresh).
 
 ## Style
-Warm and friendly design — soft greens, cream background, rounded corners, approachable like Duolingo.
+Dark minimal design — near-black background (#0a0a0a), emerald green accents, subtle borders, clean typography. Inspired by Linear/Vercel dashboard aesthetic.
 
 ## Tech Stack
 - Next.js (App Router) with TypeScript

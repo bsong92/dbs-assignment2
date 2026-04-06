@@ -64,7 +64,7 @@ function FreePractice({ entries }: { entries: VocabEntry[] }) {
               <button
                 key={`${word}-${i}`}
                 onClick={() => removeWord(i)}
-                className="px-3 py-2 bg-primary/15 text-primary-dark font-bold text-lg rounded-xl hover:bg-red-100 hover:text-red-600 transition-colors cursor-pointer"
+                className="px-3 py-2 bg-primary/15 text-primary font-bold text-lg rounded-xl hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
                 title="Click to remove"
               >
                 {word}
@@ -188,7 +188,7 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
           {sentenceEntries.length}
         </p>
         {total > 0 && (
-          <p className="text-sm font-medium text-primary-dark">
+          <p className="text-sm font-medium text-primary">
             Score: {score}/{total}
           </p>
         )}
@@ -219,9 +219,9 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
                 className={`px-2.5 py-1.5 text-xl font-bold rounded-lg ${
                   checked
                     ? isCorrect
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                    : "bg-primary/15 text-primary-dark"
+                      ? "bg-green-500/15 text-green-400"
+                      : "bg-red-500/15 text-red-400"
+                    : "bg-primary/15 text-primary"
                 }`}
               >
                 {char}
@@ -235,8 +235,8 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
         <div
           className={`mb-4 p-3 rounded-xl text-center font-medium ${
             isCorrect
-              ? "bg-green-50 text-green-700 border border-green-200"
-              : "bg-red-50 text-red-700 border border-red-200"
+              ? "bg-green-500/10 text-green-400 border border-green-500/30"
+              : "bg-red-500/10 text-red-400 border border-red-500/30"
           }`}
         >
           {isCorrect ? (

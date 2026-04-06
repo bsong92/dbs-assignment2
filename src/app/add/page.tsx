@@ -47,7 +47,7 @@ export default function AddWordPage() {
       </p>
 
       {success && (
-        <div className="mb-6 p-4 bg-primary/15 border border-primary/30 rounded-xl text-primary-dark font-medium text-center">
+        <div className="mb-6 p-4 bg-primary/10 border border-primary/30 rounded-xl text-primary font-medium text-center">
           Word added successfully!
         </div>
       )}

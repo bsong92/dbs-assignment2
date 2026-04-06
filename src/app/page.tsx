@@ -28,11 +28,11 @@ export default function DashboardPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         <div className="bg-surface rounded-xl border border-border p-5 text-center">
-          <p className="text-3xl font-bold text-primary-dark">{totalWords}</p>
+          <p className="text-3xl font-bold text-primary">{totalWords}</p>
           <p className="text-sm text-muted mt-1">Total Words</p>
         </div>
         <div className="bg-surface rounded-xl border border-border p-5 text-center">
-          <p className="text-3xl font-bold text-primary-dark">{masteredWords}</p>
+          <p className="text-3xl font-bold text-primary">{masteredWords}</p>
           <p className="text-sm text-muted mt-1">Mastered</p>
         </div>
         <div className="bg-surface rounded-xl border border-border p-5 text-center">
@@ -86,13 +86,13 @@ export default function DashboardPage() {
                 className="flex items-center justify-between p-3 bg-surface rounded-xl border border-border hover:border-primary/40 transition group"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-xl font-bold group-hover:text-primary-dark transition-colors">
+                  <span className="text-xl font-bold group-hover:text-primary transition-colors">
                     {entry.chinese}
                   </span>
                   <span className="text-muted text-sm">{entry.pinyin}</span>
                   <span className="text-foreground">{entry.english}</span>
                 </div>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary-dark">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                   {entry.category}
                 </span>
               </Link>

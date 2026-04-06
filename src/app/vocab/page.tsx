@@ -73,7 +73,7 @@ export default function VocabPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <span className="text-2xl font-bold group-hover:text-primary-dark transition-colors">
+                  <span className="text-2xl font-bold group-hover:text-primary transition-colors">
                     {entry.chinese}
                   </span>
                   <div>
@@ -82,7 +82,7 @@ export default function VocabPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary-dark font-medium">
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-medium">
                     {entry.category}
                   </span>
                   {entry.mastered && (

@@ -69,7 +69,7 @@ export default function VocabDetailPage({
               <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-1">
                 Category
               </p>
-              <span className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary-dark font-medium">
+              <span className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
                 {entry.category}
               </span>
             </div>
@@ -98,7 +98,7 @@ export default function VocabDetailPage({
           </button>
           <button
             onClick={handleDelete}
-            className="py-2.5 px-4 rounded-xl font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
+            className="py-2.5 px-4 rounded-xl font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer"
           >
             Delete
           </button>
