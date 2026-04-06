@@ -352,7 +352,19 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
 export default function PracticePage() {
   const { entries } = useVocab();
   const [mode, setMode] = useState<Mode>("match");
+  const [category, setCategory] = useState("all");
   const [key, setKey] = useState(0);
+
+  const categories = ["all", ...new Set(entries.map((e) => e.category))].filter(Boolean);
+
+  const filtered = category === "all"
+    ? entries
+    : entries.filter((e) => e.category === category);
+
+  const handleCategoryChange = (cat: string) => {
+    setCategory(cat);
+    setKey((k) => k + 1);
+  };
 
   return (
     <div className="space-y-8">
@@ -361,10 +373,11 @@ export default function PracticePage() {
         <p className="text-muted text-lg">Test your knowledge with games.</p>
       </div>
 
+      {/* Mode toggle */}
       <div className="flex gap-2 justify-center">
         {([
           { id: "match" as const, label: "Word Match", desc: "Match English → Chinese" },
-          { id: "reconstruct" as const, label: "Reconstruction", desc: "Arrange characters into sentences" },
+          { id: "reconstruct" as const, label: "Reconstruction", desc: "Unscramble sentences" },
         ]).map((m) => (
           <button
             key={m.id}
@@ -383,9 +396,26 @@ export default function PracticePage() {
         ))}
       </div>
 
+      {/* Category filter */}
+      <div className="flex gap-1.5 flex-wrap justify-center">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => handleCategoryChange(cat)}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer capitalize ${
+              category === cat
+                ? "bg-accent text-white shadow-sm"
+                : "bg-surface border border-border text-muted hover:text-foreground hover:border-border-hover"
+            }`}
+          >
+            {cat === "all" ? `All (${entries.length})` : `${cat} (${entries.filter((e) => e.category === cat).length})`}
+          </button>
+        ))}
+      </div>
+
       {mode === "match"
-        ? <WordMatch key={`wm-${key}`} entries={entries} />
-        : <ReconstructGame key={`rg-${key}`} entries={entries} />
+        ? <WordMatch key={`wm-${key}`} entries={filtered} />
+        : <ReconstructGame key={`rg-${key}`} entries={filtered} />
       }
     </div>
   );
