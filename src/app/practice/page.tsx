@@ -278,6 +278,8 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [dragFrom, setDragFrom] = useState<number | null>(null);
+  const [dragOver, setDragOver] = useState<number | null>(null);
 
   if (sentenceEntries.length === 0) {
     return (
@@ -327,10 +329,39 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
 
   const isCorrect = selected.join("") === originalChars.join("");
 
-  const handleSelect = (char: string) => {
+  // Add character from pool to build area
+  const handleAdd = (char: string) => {
     if (checked) return;
     const idx = remaining.indexOf(char);
     if (idx !== -1) setSelected((prev) => [...prev, char]);
+  };
+
+  // Click a character in build area to send it back to pool
+  const handleRemove = (removeIndex: number) => {
+    if (checked) return;
+    setSelected((prev) => prev.filter((_, i) => i !== removeIndex));
+  };
+
+  // Drag-to-reorder in build area
+  const handleDragStart = (i: number) => {
+    setDragFrom(i);
+  };
+
+  const handleDragEnter = (i: number) => {
+    setDragOver(i);
+  };
+
+  const handleDragEnd = () => {
+    if (dragFrom !== null && dragOver !== null && dragFrom !== dragOver) {
+      setSelected((prev) => {
+        const arr = [...prev];
+        const [moved] = arr.splice(dragFrom, 1);
+        arr.splice(dragOver, 0, moved);
+        return arr;
+      });
+    }
+    setDragFrom(null);
+    setDragOver(null);
   };
 
   const handleCheck = () => {
@@ -383,27 +414,35 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
         </p>
       </div>
 
-      {/* Build area */}
+      {/* Build area — click to remove, drag to reorder */}
       <div className="min-h-[80px] bg-surface rounded-2xl border-2 border-dashed border-border p-4">
         {selected.length === 0 ? (
           <p className="text-muted text-center py-4 font-medium">
-            Click characters in the correct order...
+            Click characters below to build the sentence. Click here to remove. Drag to reorder.
           </p>
         ) : (
           <div className="flex flex-wrap gap-1.5 justify-center">
             {selected.map((char, i) => (
-              <span
+              <button
                 key={`${char}-${i}`}
-                className={`px-3 py-2 text-xl font-bold rounded-lg ${
+                draggable={!checked}
+                onDragStart={() => handleDragStart(i)}
+                onDragEnter={() => handleDragEnter(i)}
+                onDragEnd={handleDragEnd}
+                onDragOver={(e) => e.preventDefault()}
+                onClick={() => handleRemove(i)}
+                className={`px-3 py-2 text-xl font-bold rounded-lg transition-all ${
                   checked
                     ? isCorrect
                       ? "bg-green-50 text-green-700"
                       : "bg-red-50 text-red-700"
-                    : "bg-primary-light text-primary-dark"
+                    : dragOver === i && dragFrom !== null
+                      ? "bg-primary/30 text-primary-dark scale-110"
+                      : "bg-primary-light text-primary-dark hover:bg-red-50 hover:text-red-600 cursor-pointer active:scale-95"
                 }`}
               >
                 {char}
-              </span>
+              </button>
             ))}
           </div>
         )}
@@ -430,11 +469,11 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
         {!checked ? (
           <>
             <button
-              onClick={() => setSelected((prev) => prev.slice(0, -1))}
+              onClick={() => setSelected([])}
               disabled={selected.length === 0}
               className="px-5 py-2.5 rounded-xl font-bold bg-stone-100 text-foreground hover:bg-stone-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
             >
-              Undo
+              Clear All
             </button>
             <button
               onClick={handleCheck}
@@ -461,7 +500,7 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
             {remaining.map((char, i) => (
               <button
                 key={`${char}-${i}`}
-                onClick={() => handleSelect(char)}
+                onClick={() => handleAdd(char)}
                 className="px-4 py-2.5 bg-surface border border-border rounded-xl text-xl font-semibold hover:border-primary/40 hover:bg-primary-light/50 transition-all cursor-pointer active:scale-95"
               >
                 {char}
