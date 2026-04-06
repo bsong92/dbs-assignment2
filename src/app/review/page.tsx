@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useVocab, VocabEntry } from "@/context/VocabContext";
 
@@ -16,7 +16,11 @@ function shuffle<T>(array: T[]): T[] {
 function FlashcardMode({ entries }: { entries: VocabEntry[] }) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [deck] = useState(() => shuffle(entries));
+  const [deck, setDeck] = useState(entries);
+
+  useEffect(() => {
+    setDeck(shuffle(entries));
+  }, [entries]);
 
   if (deck.length === 0) {
     return (

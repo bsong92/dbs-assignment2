@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useVocab, VocabEntry } from "@/context/VocabContext";
 
@@ -16,17 +16,19 @@ function shuffle<T>(array: T[]): T[] {
 }
 
 function QuizMode({ entries }: { entries: VocabEntry[] }) {
-  const questions = useMemo(() => {
-    if (entries.length < 4) return [];
+  const [questions, setQuestions] = useState<{ entry: VocabEntry; options: { text: string; correct: boolean }[] }[]>([]);
+
+  useEffect(() => {
+    if (entries.length < 4) { setQuestions([]); return; }
     const shuffled = shuffle(entries).slice(0, 10);
-    return shuffled.map((entry) => {
+    setQuestions(shuffled.map((entry) => {
       const wrongOptions = shuffle(entries.filter((e) => e.id !== entry.id)).slice(0, 3);
       const options = shuffle([
         { text: entry.english, correct: true },
         ...wrongOptions.map((w) => ({ text: w.english, correct: false })),
       ]);
       return { entry, options };
-    });
+    }));
   }, [entries]);
 
   const [currentQ, setCurrentQ] = useState(0);
@@ -43,6 +45,10 @@ function QuizMode({ entries }: { entries: VocabEntry[] }) {
         </Link>
       </div>
     );
+  }
+
+  if (questions.length === 0) {
+    return <div className="text-center py-16 text-muted"><p className="text-xl font-medium">Loading...</p></div>;
   }
 
   if (finished) {
@@ -141,14 +147,16 @@ function QuizMode({ entries }: { entries: VocabEntry[] }) {
 }
 
 function WordMatch({ entries }: { entries: VocabEntry[] }) {
-  const rounds = useMemo(() => {
-    if (entries.length < 4) return [];
+  const [rounds, setRounds] = useState<{ target: VocabEntry; options: VocabEntry[] }[]>([]);
+
+  useEffect(() => {
+    if (entries.length < 4) { setRounds([]); return; }
     const shuffled = shuffle(entries).slice(0, 10);
-    return shuffled.map((entry) => {
+    setRounds(shuffled.map((entry) => {
       const distractors = shuffle(entries.filter((e) => e.id !== entry.id)).slice(0, 3);
       const options = shuffle([entry, ...distractors]);
       return { target: entry, options };
-    });
+    }));
   }, [entries]);
 
   const [current, setCurrent] = useState(0);
@@ -165,6 +173,10 @@ function WordMatch({ entries }: { entries: VocabEntry[] }) {
         </Link>
       </div>
     );
+  }
+
+  if (rounds.length === 0) {
+    return <div className="text-center py-16 text-muted"><p className="text-xl font-medium">Loading...</p></div>;
   }
 
   if (finished) {
@@ -267,10 +279,11 @@ function WordMatch({ entries }: { entries: VocabEntry[] }) {
 }
 
 function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
-  const sentenceEntries = useMemo(
-    () => shuffle(entries.filter((e) => e.example)).slice(0, 10),
-    [entries]
-  );
+  const [sentenceEntries, setSentenceEntries] = useState<VocabEntry[]>([]);
+
+  useEffect(() => {
+    setSentenceEntries(shuffle(entries.filter((e) => e.example)).slice(0, 10));
+  }, [entries]);
 
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
@@ -315,11 +328,16 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
 
   const current = sentenceEntries[index];
   const originalChars = current.example!.replace(/[。！？，、]/g, "").split("");
-  const scrambled = useMemo(
-    () => shuffle([...originalChars]),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [index]
-  );
+  const [scrambled, setScrambled] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (current?.example) {
+      const chars = current.example.replace(/[。！？，、]/g, "").split("");
+      setScrambled(shuffle([...chars]));
+      setSelected([]);
+      setChecked(false);
+    }
+  }, [index, current]);
 
   const remaining = [...scrambled];
   selected.forEach((char) => {
