@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -25,17 +26,16 @@ export default function Navigation() {
       <div className="max-w-6xl mx-auto px-5 sm:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <span className="text-2xl group-hover:scale-110 transition-transform">
-              📖
+            <Image
+              src="/wordkeep-logo.jpeg"
+              alt="Wordkeep logo"
+              width={32}
+              height={32}
+              className="rounded-lg group-hover:scale-110 transition-transform"
+            />
+            <span className="text-lg font-bold tracking-tight text-foreground">
+              Wordkeep
             </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-lg font-bold tracking-tight text-foreground">
-                Hanyu Journal
-              </span>
-              <span className="text-xs font-medium text-muted hidden sm:inline">
-                汉语日记
-              </span>
-            </div>
           </Link>
           <div className="flex items-center gap-0.5">
             {navLinks.map((link) => (

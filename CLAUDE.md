@@ -1,4 +1,4 @@
-# Hanyu Journal (汉语日记)
+# Wordkeep
 
 A personal Chinese vocabulary learning journal built with Next.js + Tailwind CSS.
 

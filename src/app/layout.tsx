@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hanyu Journal | 汉语日记",
+  title: "Wordkeep — Chinese Vocabulary Journal",
   description: "A personal Chinese vocabulary journal for retention and review",
 };
 
@@ -38,7 +38,7 @@ export default function RootLayout({
         </Providers>
         <footer className="border-t border-border py-8 text-center">
           <p className="text-sm text-muted">
-            Hanyu Journal — Built for learning Chinese, one word at a time.
+            Wordkeep — Built for learning Chinese, one word at a time.
           </p>
         </footer>
       </body>
