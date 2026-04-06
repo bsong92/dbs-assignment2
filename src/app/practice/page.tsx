@@ -247,11 +247,14 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
       {/* Prompt */}
       <div className="bg-surface rounded-2xl border border-border p-6 text-center">
         <p className="text-xs font-bold text-muted uppercase tracking-widest mb-2">
-          Arrange the characters to form
+          Unscramble this sentence
         </p>
-        <p className="text-xl font-semibold">{current.english}</p>
-        <p className="text-sm text-muted mt-1.5">
-          {current.chinese} · {current.pinyin}
+        <p className="text-lg font-semibold text-muted">
+          The scrambled characters below form a sentence using:
+        </p>
+        <p className="text-2xl font-extrabold mt-2">{current.chinese}</p>
+        <p className="text-sm text-muted mt-1">
+          {current.pinyin} — {current.english}
         </p>
       </div>
 
