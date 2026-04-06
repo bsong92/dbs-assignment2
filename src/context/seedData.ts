@@ -132,4 +132,28 @@ export const SEED_DATA: VocabEntry[] = [
   { id: "98", chinese: "价值", pinyin: "jià zhí", english: "value / worth", example: "这本书很有价值。", category: "daily", mastered: false, createdAt: now },
   { id: "99", chinese: "贡献", pinyin: "gòng xiàn", english: "contribution / to contribute", example: "她为公司做出了很大贡献。", category: "work", mastered: false, createdAt: now },
   { id: "100", chinese: "挑战", pinyin: "tiǎo zhàn", english: "challenge", example: "学中文是一个很大的挑战。", category: "work", mastered: false, createdAt: now },
+
+  // === NUMBERS & MATH ===
+  { id: "101", chinese: "百", pinyin: "bǎi", english: "hundred", example: "这本书有三百页。", category: "numbers", mastered: true, createdAt: now },
+  { id: "102", chinese: "千", pinyin: "qiān", english: "thousand", example: "这个城市有两千年的历史。", category: "numbers", mastered: true, createdAt: now },
+  { id: "103", chinese: "万", pinyin: "wàn", english: "ten thousand", example: "他赚了一万块钱。", category: "numbers", mastered: false, createdAt: now },
+  { id: "104", chinese: "亿", pinyin: "yì", english: "hundred million", example: "中国有十四亿人口。", category: "numbers", mastered: false, createdAt: now },
+  { id: "105", chinese: "倍", pinyin: "bèi", english: "times (multiplier)", example: "今年的收入是去年的两倍。", category: "numbers", mastered: false, createdAt: now },
+  { id: "106", chinese: "比例", pinyin: "bǐ lì", english: "ratio / proportion", example: "男女比例大概是一比一。", category: "numbers", mastered: false, createdAt: now },
+  { id: "107", chinese: "数量", pinyin: "shù liàng", english: "quantity / amount", example: "请确认一下数量。", category: "numbers", mastered: false, createdAt: now },
+  { id: "108", chinese: "平均", pinyin: "píng jūn", english: "average", example: "平均每天学五个新词。", category: "numbers", mastered: false, createdAt: now },
+  { id: "109", chinese: "大约", pinyin: "dà yuē", english: "approximately", example: "大约需要三十分钟。", category: "numbers", mastered: false, createdAt: now },
+  { id: "110", chinese: "至少", pinyin: "zhì shǎo", english: "at least", example: "你至少要学一百个词。", category: "numbers", mastered: false, createdAt: now },
+
+  // === OTHER / MISCELLANEOUS ===
+  { id: "111", chinese: "幽默", pinyin: "yōu mò", english: "humor / humorous", example: "他是一个很幽默的人。", category: "other", mastered: false, createdAt: now },
+  { id: "112", chinese: "缘分", pinyin: "yuán fèn", english: "fate / destiny (in relationships)", example: "能认识你是一种缘分。", category: "other", mastered: false, createdAt: now },
+  { id: "113", chinese: "面子", pinyin: "miàn zi", english: "face (reputation / dignity)", example: "中国人很注重面子。", category: "other", mastered: false, createdAt: now },
+  { id: "114", chinese: "吉利", pinyin: "jí lì", english: "auspicious / lucky", example: "八是一个吉利的数字。", category: "other", mastered: false, createdAt: now },
+  { id: "115", chinese: "干杯", pinyin: "gān bēi", english: "cheers (toast)", example: "为我们的友谊干杯！", category: "other", mastered: false, createdAt: now },
+  { id: "116", chinese: "成语", pinyin: "chéng yǔ", english: "idiom (four-character)", example: "中文里有很多有趣的成语。", category: "other", mastered: false, createdAt: now },
+  { id: "117", chinese: "功夫", pinyin: "gōng fu", english: "kung fu / skill / effort", example: "学好中文需要下功夫。", category: "other", mastered: false, createdAt: now },
+  { id: "118", chinese: "加油", pinyin: "jiā yóu", english: "keep it up! / go for it!", example: "明天考试，加油！", category: "other", mastered: false, createdAt: now },
+  { id: "119", chinese: "马马虎虎", pinyin: "mǎ mǎ hū hū", english: "so-so / careless", example: "你最近怎么样？马马虎虎。", category: "other", mastered: false, createdAt: now },
+  { id: "120", chinese: "入乡随俗", pinyin: "rù xiāng suí sú", english: "when in Rome, do as the Romans do", example: "到了中国就要入乡随俗。", category: "other", mastered: false, createdAt: now },
 ];
