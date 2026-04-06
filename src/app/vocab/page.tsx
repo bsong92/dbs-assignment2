@@ -23,40 +23,53 @@ export default function VocabPage() {
   });
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-2">Vocabulary</h1>
-      <p className="text-muted mb-6">
-        {entries.length} word{entries.length !== 1 ? "s" : ""} in your journal
-      </p>
-
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <input
-          type="text"
-          placeholder="Search by Chinese, pinyin, or English..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
-        />
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="px-4 py-2.5 rounded-xl border border-border bg-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
-        >
-          {ALL_CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat === "all" ? "All Categories" : cat.charAt(0).toUpperCase() + cat.slice(1)}
-            </option>
-          ))}
-        </select>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-2">Vocabulary</h1>
+        <p className="text-muted text-lg">
+          {entries.length} word{entries.length !== 1 ? "s" : ""} in your journal
+        </p>
       </div>
 
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by Chinese, pinyin, or English..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-surface placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+          />
+        </div>
+        <div className="flex gap-1.5 flex-wrap">
+          {ALL_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategory(cat)}
+              className={`px-3.5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer capitalize ${
+                category === cat
+                  ? "bg-primary text-white shadow-sm"
+                  : "bg-surface border border-border text-muted hover:text-foreground hover:border-border-hover"
+              }`}
+            >
+              {cat === "all" ? "All" : cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Word List */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-muted">
-          <p className="text-lg">No words found.</p>
-          <p className="text-sm mt-1">
+        <div className="text-center py-20">
+          <p className="text-xl text-muted font-medium">No words found.</p>
+          <p className="text-sm text-muted mt-2">
             {entries.length === 0 ? (
-              <Link href="/add" className="text-primary hover:underline">
-                Add your first word
+              <Link href="/add" className="text-primary hover:underline font-semibold">
+                Add your first word →
               </Link>
             ) : (
               "Try adjusting your search or filter."
@@ -64,33 +77,31 @@ export default function VocabPage() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="bg-surface rounded-2xl border border-border divide-y divide-border overflow-hidden">
           {filtered.map((entry) => (
             <Link
               key={entry.id}
               href={`/vocab/${entry.id}`}
-              className="block p-4 bg-surface rounded-xl border border-border hover:border-primary/40 hover:shadow-sm transition group"
+              className="flex items-center justify-between p-4 hover:bg-stone-50 transition-colors group"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <span className="text-2xl font-bold group-hover:text-primary transition-colors">
-                    {entry.chinese}
-                  </span>
-                  <div>
-                    <p className="text-sm text-muted">{entry.pinyin}</p>
-                    <p className="text-foreground">{entry.english}</p>
-                  </div>
+              <div className="flex items-center gap-4">
+                <span className="text-2xl font-bold w-20 text-center group-hover:text-primary transition-colors">
+                  {entry.chinese}
+                </span>
+                <div>
+                  <p className="text-sm text-muted">{entry.pinyin}</p>
+                  <p className="font-medium">{entry.english}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-medium">
-                    {entry.category}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-stone-100 text-muted capitalize">
+                  {entry.category}
+                </span>
+                {entry.mastered && (
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-light text-primary-dark">
+                    ✓ mastered
                   </span>
-                  {entry.mastered && (
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-accent/15 text-accent font-medium">
-                      mastered
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
             </Link>
           ))}

@@ -21,50 +21,36 @@ function FreePractice({ entries }: { entries: VocabEntry[] }) {
     shuffle(entries.map((e) => e.chinese))
   );
 
-  const addWord = (word: string) => {
-    setSentence((prev) => [...prev, word]);
-  };
-
-  const removeWord = (index: number) => {
-    setSentence((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const clear = () => setSentence([]);
-
-  const reshuffleWords = () => {
-    setShuffledWords(shuffle(entries.map((e) => e.chinese)));
-  };
-
   if (entries.length === 0) {
     return (
       <div className="text-center py-16 text-muted">
-        <p className="text-lg">No words to practice with.</p>
-        <Link href="/add" className="text-primary hover:underline">
-          Add some words first
+        <p className="text-xl font-medium">No words to practice with.</p>
+        <Link href="/add" className="text-primary hover:underline font-semibold mt-2 inline-block">
+          Add some words first →
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <p className="text-sm text-muted mb-4">
-        Click words below to build a sentence. Practice forming Chinese phrases!
+    <div className="max-w-2xl mx-auto space-y-6">
+      <p className="text-sm text-muted font-medium">
+        Click words below to build a sentence. Click a word in your sentence to remove it.
       </p>
 
       {/* Sentence area */}
-      <div className="min-h-[100px] bg-surface rounded-2xl border-2 border-dashed border-border p-4 mb-4">
+      <div className="min-h-[120px] bg-surface rounded-2xl border-2 border-dashed border-border p-5">
         {sentence.length === 0 ? (
-          <p className="text-muted text-center py-6">
-            Click words below to start building a sentence...
+          <p className="text-muted text-center py-8 font-medium">
+            Click words below to start building...
           </p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {sentence.map((word, i) => (
               <button
                 key={`${word}-${i}`}
-                onClick={() => removeWord(i)}
-                className="px-3 py-2 bg-primary/15 text-primary font-bold text-lg rounded-xl hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
+                onClick={() => setSentence((prev) => prev.filter((_, idx) => idx !== i))}
+                className="px-4 py-2.5 bg-primary-light text-primary-dark font-bold text-lg rounded-xl hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer active:scale-95"
                 title="Click to remove"
               >
                 {word}
@@ -75,42 +61,42 @@ function FreePractice({ entries }: { entries: VocabEntry[] }) {
       </div>
 
       {sentence.length > 0 && (
-        <div className="mb-4 p-3 bg-surface rounded-xl border border-border">
-          <p className="text-sm text-muted mb-1">Your sentence:</p>
-          <p className="text-2xl font-bold">{sentence.join("")}</p>
+        <div className="p-4 bg-surface rounded-2xl border border-border">
+          <p className="text-xs font-bold text-muted uppercase tracking-widest mb-2">Your sentence</p>
+          <p className="text-3xl font-extrabold tracking-tight">{sentence.join("")}</p>
         </div>
       )}
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2">
         <button
-          onClick={clear}
+          onClick={() => setSentence([])}
           disabled={sentence.length === 0}
-          className="px-4 py-2 rounded-xl font-medium bg-muted/20 text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          className="px-5 py-2.5 rounded-xl font-bold bg-stone-100 text-foreground hover:bg-stone-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
         >
           Clear
         </button>
         <button
-          onClick={reshuffleWords}
-          className="px-4 py-2 rounded-xl font-medium bg-muted/20 text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
+          onClick={() => setShuffledWords(shuffle(entries.map((e) => e.chinese)))}
+          className="px-5 py-2.5 rounded-xl font-bold bg-stone-100 text-foreground hover:bg-stone-200 transition-all cursor-pointer active:scale-[0.98]"
         >
-          Shuffle Words
+          Shuffle
         </button>
       </div>
 
       {/* Word bank */}
-      <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
-        Word Bank
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {shuffledWords.map((word, i) => (
-          <button
-            key={`${word}-${i}`}
-            onClick={() => addWord(word)}
-            className="px-3 py-2 bg-surface border border-border rounded-xl text-lg font-medium hover:border-primary/40 hover:bg-primary/5 transition-colors cursor-pointer"
-          >
-            {word}
-          </button>
-        ))}
+      <div>
+        <p className="text-xs font-bold text-muted uppercase tracking-widest mb-3">Word Bank</p>
+        <div className="flex flex-wrap gap-2">
+          {shuffledWords.map((word, i) => (
+            <button
+              key={`${word}-${i}`}
+              onClick={() => setSentence((prev) => [...prev, word])}
+              className="px-4 py-2.5 bg-surface border border-border rounded-xl text-lg font-semibold hover:border-primary/40 hover:bg-primary-light/50 transition-all cursor-pointer active:scale-95"
+            >
+              {word}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -131,10 +117,8 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
   if (sentenceEntries.length === 0) {
     return (
       <div className="text-center py-16 text-muted">
-        <p className="text-lg">No example sentences available.</p>
-        <p className="text-sm mt-1">
-          Add words with example sentences to play the reconstruction game.
-        </p>
+        <p className="text-xl font-medium">No example sentences available.</p>
+        <p className="text-sm mt-2">Add words with example sentences to play.</p>
       </div>
     );
   }
@@ -158,14 +142,7 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
   const handleSelect = (char: string) => {
     if (checked) return;
     const idx = remaining.indexOf(char);
-    if (idx !== -1) {
-      setSelected((prev) => [...prev, char]);
-    }
-  };
-
-  const handleUndo = () => {
-    if (checked) return;
-    setSelected((prev) => prev.slice(0, -1));
+    if (idx !== -1) setSelected((prev) => [...prev, char]);
   };
 
   const handleCheck = () => {
@@ -181,47 +158,44 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-muted">
-          Sentence {(index % sentenceEntries.length) + 1} of{" "}
-          {sentenceEntries.length}
+    <div className="max-w-2xl mx-auto space-y-5">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted font-medium">
+          Sentence {(index % sentenceEntries.length) + 1} of {sentenceEntries.length}
         </p>
         {total > 0 && (
-          <p className="text-sm font-medium text-primary">
+          <p className="text-sm font-bold text-primary">
             Score: {score}/{total}
           </p>
         )}
       </div>
 
-      {/* Hint: show the English meaning */}
-      <div className="bg-surface rounded-xl border border-border p-4 mb-4 text-center">
-        <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-1">
-          Translate this into Chinese
+      <div className="bg-surface rounded-2xl border border-border p-6 text-center">
+        <p className="text-xs font-bold text-muted uppercase tracking-widest mb-2">
+          Reconstruct this sentence
         </p>
-        <p className="text-lg font-medium">{current.english}</p>
-        <p className="text-sm text-muted mt-1">
-          Word: {current.chinese} ({current.pinyin})
+        <p className="text-xl font-semibold">{current.english}</p>
+        <p className="text-sm text-muted mt-1.5">
+          {current.chinese} · {current.pinyin}
         </p>
       </div>
 
-      {/* Build area */}
-      <div className="min-h-[80px] bg-surface rounded-2xl border-2 border-dashed border-border p-4 mb-4">
+      <div className="min-h-[80px] bg-surface rounded-2xl border-2 border-dashed border-border p-4">
         {selected.length === 0 ? (
-          <p className="text-muted text-center py-4">
-            Click characters below in the correct order...
+          <p className="text-muted text-center py-4 font-medium">
+            Click characters in the correct order...
           </p>
         ) : (
-          <div className="flex flex-wrap gap-1 justify-center">
+          <div className="flex flex-wrap gap-1.5 justify-center">
             {selected.map((char, i) => (
               <span
                 key={`${char}-${i}`}
-                className={`px-2.5 py-1.5 text-xl font-bold rounded-lg ${
+                className={`px-3 py-2 text-xl font-bold rounded-lg ${
                   checked
                     ? isCorrect
-                      ? "bg-green-500/15 text-green-400"
-                      : "bg-red-500/15 text-red-400"
-                    : "bg-primary/15 text-primary"
+                      ? "bg-green-50 text-green-700"
+                      : "bg-red-50 text-red-700"
+                    : "bg-primary-light text-primary-dark"
                 }`}
               >
                 {char}
@@ -233,37 +207,35 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
 
       {checked && (
         <div
-          className={`mb-4 p-3 rounded-xl text-center font-medium ${
+          className={`p-4 rounded-2xl text-center font-bold ${
             isCorrect
-              ? "bg-green-500/10 text-green-400 border border-green-500/30"
-              : "bg-red-500/10 text-red-400 border border-red-500/30"
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : "bg-red-50 text-red-700 border border-red-200"
           }`}
         >
-          {isCorrect ? (
-            "Correct!"
-          ) : (
+          {isCorrect ? "✓ Correct!" : (
             <>
               <p>Not quite. The correct sentence is:</p>
-              <p className="text-lg font-bold mt-1">{current.example}</p>
+              <p className="text-xl mt-1">{current.example}</p>
             </>
           )}
         </div>
       )}
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2">
         {!checked ? (
           <>
             <button
-              onClick={handleUndo}
+              onClick={() => setSelected((prev) => prev.slice(0, -1))}
               disabled={selected.length === 0}
-              className="px-4 py-2 rounded-xl font-medium bg-muted/20 text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="px-5 py-2.5 rounded-xl font-bold bg-stone-100 text-foreground hover:bg-stone-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
             >
               Undo
             </button>
             <button
               onClick={handleCheck}
               disabled={remaining.length > 0}
-              className="flex-1 py-2 rounded-xl font-medium bg-primary hover:bg-primary-dark text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl font-bold bg-primary hover:bg-primary-dark text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
             >
               Check
             </button>
@@ -271,31 +243,28 @@ function ReconstructGame({ entries }: { entries: VocabEntry[] }) {
         ) : (
           <button
             onClick={handleNext}
-            className="flex-1 py-2 rounded-xl font-medium bg-primary hover:bg-primary-dark text-white transition-colors cursor-pointer"
+            className="flex-1 py-2.5 rounded-xl font-bold bg-primary hover:bg-primary-dark text-white transition-all cursor-pointer hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
           >
-            Next Sentence
+            Next Sentence →
           </button>
         )}
       </div>
 
-      {/* Scrambled characters */}
       {!checked && (
-        <>
-          <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
-            Characters
-          </p>
-          <div className="flex flex-wrap gap-1.5 justify-center">
+        <div>
+          <p className="text-xs font-bold text-muted uppercase tracking-widest mb-3">Characters</p>
+          <div className="flex flex-wrap gap-2 justify-center">
             {remaining.map((char, i) => (
               <button
                 key={`${char}-${i}`}
                 onClick={() => handleSelect(char)}
-                className="px-3 py-2 bg-surface border border-border rounded-xl text-xl font-medium hover:border-primary/40 hover:bg-primary/5 transition-colors cursor-pointer"
+                className="px-4 py-2.5 bg-surface border border-border rounded-xl text-xl font-semibold hover:border-primary/40 hover:bg-primary-light/50 transition-all cursor-pointer active:scale-95"
               >
                 {char}
               </button>
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
@@ -306,40 +275,29 @@ export default function PracticePage() {
   const [mode, setMode] = useState<Mode>("free");
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-2">Sentence Practice</h1>
-      <p className="text-muted mb-6">
-        Build sentences with your vocabulary words.
-      </p>
-
-      <div className="flex gap-2 mb-8 justify-center">
-        <button
-          onClick={() => setMode("free")}
-          className={`px-5 py-2 rounded-xl font-medium transition-colors cursor-pointer ${
-            mode === "free"
-              ? "bg-primary text-white"
-              : "bg-surface border border-border text-foreground hover:bg-muted/10"
-          }`}
-        >
-          Free Practice
-        </button>
-        <button
-          onClick={() => setMode("reconstruct")}
-          className={`px-5 py-2 rounded-xl font-medium transition-colors cursor-pointer ${
-            mode === "reconstruct"
-              ? "bg-primary text-white"
-              : "bg-surface border border-border text-foreground hover:bg-muted/10"
-          }`}
-        >
-          Reconstruction
-        </button>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-2">Sentence Practice</h1>
+        <p className="text-muted text-lg">Build sentences with your vocabulary words.</p>
       </div>
 
-      {mode === "free" ? (
-        <FreePractice entries={entries} />
-      ) : (
-        <ReconstructGame entries={entries} />
-      )}
+      <div className="flex gap-2 justify-center">
+        {(["free", "reconstruct"] as const).map((m) => (
+          <button
+            key={m}
+            onClick={() => setMode(m)}
+            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer ${
+              mode === m
+                ? "bg-primary text-white shadow-sm"
+                : "bg-surface border border-border text-muted hover:text-foreground hover:border-border-hover"
+            }`}
+          >
+            {m === "free" ? "Free Practice" : "Reconstruction"}
+          </button>
+        ))}
+      </div>
+
+      {mode === "free" ? <FreePractice entries={entries} /> : <ReconstructGame entries={entries} />}
     </div>
   );
 }
