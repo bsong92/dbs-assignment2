@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import { useVocab } from "@/context/VocabContext";
 
 export default function ProgressPage() {
   const { entries } = useVocab();
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const totalWords = entries.length;
   const masteredWords = entries.filter((e) => e.mastered).length;
@@ -13,16 +16,23 @@ export default function ProgressPage() {
   const categories = [...new Set(entries.map((e) => e.category))].sort();
   const categoryStats = categories.map((cat) => {
     const words = entries.filter((e) => e.category === cat);
-    const mastered = words.filter((e) => e.mastered).length;
+    const mastered = words.filter((e) => e.mastered);
+    const learning = words.filter((e) => !e.mastered);
     return {
       name: cat,
       total: words.length,
+      masteredCount: mastered.length,
       mastered,
-      percent: words.length > 0 ? Math.round((mastered / words.length) * 100) : 0,
+      learning,
+      percent: words.length > 0 ? Math.round((mastered.length / words.length) * 100) : 0,
     };
   });
 
-  const recentlyMastered = entries.filter((e) => e.mastered).slice(0, 5);
+  const allMastered = entries.filter((e) => e.mastered);
+
+  const toggleCategory = (name: string) => {
+    setExpandedCategory((prev) => (prev === name ? null : name));
+  };
 
   return (
     <div className="space-y-8">
@@ -72,7 +82,7 @@ export default function ProgressPage() {
         </div>
       </div>
 
-      {/* Category breakdown */}
+      {/* Category breakdown — clickable */}
       <div className="bg-surface rounded-2xl border border-border p-8">
         <p className="text-sm font-bold text-muted uppercase tracking-widest mb-6">
           By Category
@@ -80,47 +90,115 @@ export default function ProgressPage() {
         {categoryStats.length === 0 ? (
           <p className="text-muted text-center py-8 font-medium">No categories yet.</p>
         ) : (
-          <div className="space-y-5">
+          <div className="space-y-3">
             {categoryStats.map((cat) => (
               <div key={cat.name}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-bold capitalize">{cat.name}</span>
-                  <span className="text-xs text-muted font-medium">
-                    {cat.mastered}/{cat.total} · {cat.percent}%
-                  </span>
-                </div>
-                <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
-                    style={{ width: `${cat.percent}%` }}
-                  />
-                </div>
+                <button
+                  onClick={() => toggleCategory(cat.name)}
+                  className="w-full text-left cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs transition-transform duration-200 ${expandedCategory === cat.name ? "rotate-90" : ""}`}>
+                        ▶
+                      </span>
+                      <span className="text-sm font-bold capitalize group-hover:text-primary transition-colors">
+                        {cat.name}
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted font-medium">
+                      {cat.masteredCount}/{cat.total} mastered · {cat.percent}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden ml-5">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
+                      style={{ width: `${cat.percent}%` }}
+                    />
+                  </div>
+                </button>
+
+                {/* Expanded word list */}
+                {expandedCategory === cat.name && (
+                  <div className="ml-5 mt-3 mb-4 bg-stone-50 rounded-xl border border-border overflow-hidden">
+                    {cat.mastered.length > 0 && (
+                      <>
+                        <p className="text-xs font-bold text-primary uppercase tracking-widest px-4 pt-3 pb-1">
+                          Mastered ({cat.mastered.length})
+                        </p>
+                        <div className="divide-y divide-border">
+                          {cat.mastered.map((entry) => (
+                            <Link
+                              key={entry.id}
+                              href={`/vocab/${entry.id}`}
+                              className="flex items-center justify-between px-4 py-2.5 hover:bg-stone-100 transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg font-bold w-12 text-center">{entry.chinese}</span>
+                                <span className="text-xs text-muted">{entry.pinyin}</span>
+                              </div>
+                              <span className="text-sm">{entry.english}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    {cat.learning.length > 0 && (
+                      <>
+                        <p className="text-xs font-bold text-accent uppercase tracking-widest px-4 pt-3 pb-1">
+                          Learning ({cat.learning.length})
+                        </p>
+                        <div className="divide-y divide-border">
+                          {cat.learning.map((entry) => (
+                            <Link
+                              key={entry.id}
+                              href={`/vocab/${entry.id}`}
+                              className="flex items-center justify-between px-4 py-2.5 hover:bg-stone-100 transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg font-bold w-12 text-center">{entry.chinese}</span>
+                                <span className="text-xs text-muted">{entry.pinyin}</span>
+                              </div>
+                              <span className="text-sm">{entry.english}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Recently mastered */}
-      {recentlyMastered.length > 0 && (
+      {/* All mastered words */}
+      {allMastered.length > 0 && (
         <div className="bg-surface rounded-2xl border border-border overflow-hidden">
           <div className="p-6 pb-0">
             <p className="text-sm font-bold text-muted uppercase tracking-widest">
-              Mastered Words
+              All Mastered Words ({allMastered.length})
             </p>
           </div>
           <div className="divide-y divide-border mt-4">
-            {recentlyMastered.map((entry) => (
-              <div
+            {allMastered.map((entry) => (
+              <Link
                 key={entry.id}
-                className="flex items-center justify-between p-4 px-6"
+                href={`/vocab/${entry.id}`}
+                className="flex items-center justify-between p-4 px-6 hover:bg-stone-50 transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <span className="text-xl font-bold w-14 text-center">{entry.chinese}</span>
                   <span className="text-sm text-muted">{entry.pinyin}</span>
                 </div>
-                <span className="text-sm font-medium">{entry.english}</span>
-              </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium">{entry.english}</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-muted capitalize">
+                    {entry.category}
+                  </span>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
